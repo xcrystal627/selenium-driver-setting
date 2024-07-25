@@ -58,4 +58,62 @@ def start_driver():
         print(error)
         driver.quit()
         return None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+import urllib.request
+import logging
+import chromedriver_autoinstaller
+
+
+logging.basicConfig(level=logging.INFO)
+
+def start_driver():
+    options = webdriver.ChromeOptions()
+    options.add_argument('--blink-settings=imagesEnabled=false')
+    options.add_argument('--disable-extensions')
+    options.add_argument('--start-maximized')
+    options.add_argument('--disable-dev-shm-usage')
+    chromedriver_autoinstaller.install()
+
+
+    try:
+        # service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(options=options)
+    except Exception as e:
+        logging.error(f"Initial ChromeDriver initialization failed: {e}")
+        try:
+            latest_chromedriver_version_url = "https://chromedriver.storage.googleapis.com/LATEST_RELEASE"
+            latest_chromedriver_version = urllib.request.urlopen(latest_chromedriver_version_url).read().decode('utf-8')
+            service = Service(ChromeDriverManager(driver_version=latest_chromedriver_version).install())
+            driver = webdriver.Chrome(service=service, options=options)
+        except Exception as e:
+            logging.critical(f"Failed to initialize ChromeDriver even after updating: {e}")
+            return None
+
+    return driver
+
     
